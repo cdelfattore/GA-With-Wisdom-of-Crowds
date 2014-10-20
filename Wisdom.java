@@ -134,7 +134,7 @@ public class Wisdom {
 				//h represents all of the nodes in the list,
 				for(int h = 0; h <= initOrderPathSize; h++){ 
 					if(h != j)	{ //if to prevent combining the same path with itself
-						if(compareArrayList(orderPaths.get(j),orderPaths.get(h)) == false){
+						if(compareArrayList(orderPaths.get(j),orderPaths.get(h)) == false || orderPaths.get(j).dist != orderPaths.get(h).dist){
 							//Create a child path by calling the create child path.
 							//System.out.println("Same Path");
 							Path tmp = createChildPath(orderPaths.get(j),orderPaths.get(h),numCrossNodes,mutateRate);
@@ -144,12 +144,23 @@ public class Wisdom {
 						//if the paths are the same mutate them
 						//this is an improve on the genetic algorithm implementation from project 4
 						else {
-							//orderPaths.get(j).swap();
+							orderPaths.get(j).swap();
 							orderPaths.get(h).swap();
+							Path tmp = createChildPath(orderPaths.get(j),orderPaths.get(h),numCrossNodes,mutateRate);
+							//add the new path to orderPaths, will sort the entire list after the for loop terminates
+							orderPaths.add(tmp);	
 						}
 					}
 				}
 			}
+			Double previousDistance = 0.0;
+			for(int ka = 0; ka < orderPaths.size(); ka++){
+				if(orderPaths.get(ka).dist == previousDistance){
+					orderPaths.get(ka).swap();
+				}
+				previousDistance = orderPaths.get(ka).dist;
+			}
+
 			//sort the orderPaths list so the smaller length paths are at the beginning of the list
 			orderPaths = sortPathList(orderPaths,popSize);
 
@@ -157,30 +168,129 @@ public class Wisdom {
 				System.out.println(p.pathList + " " + p.dist);
 			}
 			System.out.println();*/
-
-			/*for(Path p : orderPaths){
-				System.out.println(p.pathList + " " + p.dist);
-			}
-			System.out.println();*/
 			//System.out.println(orderPaths.get(0).dist);
 		}
-
-		for(Path p : orderPaths){
-			System.out.println(/*p.pathList + " " +*/ p.dist);
+		/*for(Path p : orderPaths){
+			//System.out.println(p.pathList + " " + p.dist);
+			System.out.println(p.dist);
 		}
+		System.out.println();
+
+		Double previousDistance = 0.0;
+		for(int i = 0; i < orderPaths.size(); i++){
+			if(orderPaths.get(i).dist == previousDistance){
+				orderPaths.get(i).swap();
+			}
+			previousDistance = orderPaths.get(i).dist;
+		}*/
+
+		/*for(Path p : orderPaths){
+			//System.out.println(p.pathList + " " + p.dist);
+			System.out.println(p.dist);
+		}
+		System.out.println();*/
+
+		// for(Path p : orderPaths){
+		// 	System.out.println(/*p.pathList + " " +*/ p.dist);
+		// }
 		/*System.out.println();
 		Boolean foo = compareArrayList(orderPaths.get(0),orderPaths.get(1));
 		System.out.println(foo);*/
 
 		//Wisdom of the crowd logic
 
+		//first search through the orderPath Arraylist and grab all the different paths
+		//store them in a new arraylist
+		List<Path> uniquePaths = new ArrayList<Path>();
+		List<Double> uniqueDistances = new ArrayList<Double>();
+		for(Path p : orderPaths){
+			if(!uniqueDistances.contains(p.dist)){
+				uniqueDistances.add(p.dist);
+				uniquePaths.add(p);
+			}
+			if(uniquePaths.size() == 6) break;
+		}
+
+		/*for(Path p : uniquePaths){
+			//System.out.println(p.pathList + " " + p.dist);
+			System.out.println(p.dist);
+		}
+		System.out.println();*/
+
 		//find edges that are common among the top 6 different smallest paths
+		//create a multi-dimensional array for this
+		int[][] edgeCounts = new int[points.size()+1][points.size()+1];
+		for(Path p : uniquePaths){
+			//System.out.println(p.pathList);
+			for(int i = 0; i < p.pathList.size(); i++){
+				if(i+1 == p.pathList.size()){
+					//System.out.print(p.pathList.get(i)+"-"+p.pathList.get(0));
+					if(p.pathList.get(i) < p.pathList.get(0)) {
+						edgeCounts[p.pathList.get(i)][p.pathList.get(0)] += 1;
+					}
+					else if(p.pathList.get(i) > p.pathList.get(0)){
+						edgeCounts[p.pathList.get(0)][p.pathList.get(i)] += 1;
+					}
+				}
+				else {
+					//System.out.print(p.pathList.get(i)+"-"+p.pathList.get(i+1)+ ",");
+					if(p.pathList.get(i) < p.pathList.get(i+1)){
+						edgeCounts[p.pathList.get(i)][p.pathList.get(i+1)] += 1;		
+					}
+					else if(p.pathList.get(i) > p.pathList.get(i+1)){
+						edgeCounts[p.pathList.get(i+1)][p.pathList.get(i)] += 1;		
+					}
+					
+				}
+			}
+			//System.out.println();
+		}
+		//print the occurances of the path lengths
+		/*for (int i = 1; i <= points.size();i++ ) {
+			for(int j = 1; j <= points.size(); j++){
+				if(edgeCounts[i][j] != 0){
+					System.out.println(i+","+j + ": " +edgeCounts[i][j]);	
+				}
+				
+			}
+		}*/
 
+		//use a map to easily find what edges occur most often
+		Map<String,Integer> mostCommonEdges = new HashMap<String,Integer>();
+		for (int i = 1; i <= points.size();i++ ) {
+			for(int j = 1; j <= points.size(); j++){
+				if(edgeCounts[i][j] != 0){
+					//System.out.println(i+","+j + ": " +edgeCounts[i][j]);	
+					mostCommonEdges.put(i+"-"+j,edgeCounts[i][j]);
+				}
+				
+			}
+		}
 
+		/*for(String s : mostCommonEdges.keySet()){
+			System.out.println(s + ", " + mostCommonEdges.get(s));
+		}*/
 
+		//construct the new path with the n-1 most common edges
+		//because I only uses 6 paths to figure out which are the most common
+		//start with the edges that occur 6 times, then 5... until there is n-1 edges.
+		List<String> wisdomPath = new ArrayList<String>();
+		for(int i = 6; i > 0; i--){
+			for(String s : mostCommonEdges.keySet()){
+				//System.out.println(s + ", " + mostCommonEdges.get(s));
+				if(mostCommonEdges.get(s) == i){
+					System.out.println(s + ", " + mostCommonEdges.get(s));
+					wisdomPath.add(s);
+					if(wisdomPath.size() == points.size()-1){
+						break;
+					}
+				}
+			}
+		}
 
-
-		//construct the new path
+		for(String s : wisdomPath){
+			System.out.print(s + " ");
+		}
 
 
 
