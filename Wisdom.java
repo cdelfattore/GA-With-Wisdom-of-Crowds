@@ -174,19 +174,12 @@ public class Wisdom {
 			//System.out.println(p.pathList + " " + p.dist);
 			System.out.println(p.dist);
 		}
-		System.out.println();
+		System.out.println();*/
 
-		Double previousDistance = 0.0;
-		for(int i = 0; i < orderPaths.size(); i++){
-			if(orderPaths.get(i).dist == previousDistance){
-				orderPaths.get(i).swap();
-			}
-			previousDistance = orderPaths.get(i).dist;
-		}*/
 
 		/*for(Path p : orderPaths){
-			//System.out.println(p.pathList + " " + p.dist);
-			System.out.println(p.dist);
+			System.out.println(p.pathList + " " + p.dist);
+			//System.out.println(p.dist);
 		}
 		System.out.println();*/
 
@@ -211,11 +204,11 @@ public class Wisdom {
 			if(uniquePaths.size() == 6) break;
 		}
 
-		/*for(Path p : uniquePaths){
+		for(Path p : uniquePaths){
 			//System.out.println(p.pathList + " " + p.dist);
 			System.out.println(p.dist);
 		}
-		System.out.println();*/
+		System.out.println();
 
 		//find edges that are common among the top 6 different smallest paths
 		//create a multi-dimensional array for this
@@ -275,22 +268,129 @@ public class Wisdom {
 		//because I only uses 6 paths to figure out which are the most common
 		//start with the edges that occur 6 times, then 5... until there is n-1 edges.
 		List<String> wisdomPath = new ArrayList<String>();
+		Boolean stop = false;
 		for(int i = 6; i > 0; i--){
+			if(stop) break;
 			for(String s : mostCommonEdges.keySet()){
 				//System.out.println(s + ", " + mostCommonEdges.get(s));
+				if(stop) break;
 				if(mostCommonEdges.get(s) == i){
-					System.out.println(s + ", " + mostCommonEdges.get(s));
+					//System.out.println(s + ", " + mostCommonEdges.get(s));
 					wisdomPath.add(s);
 					if(wisdomPath.size() == points.size()-1){
-						break;
+						stop = true;
 					}
 				}
 			}
 		}
 
+		/*String initPathStr = "";
 		for(String s : wisdomPath){
-			System.out.print(s + " ");
+			//System.out.print(s + " ");
+			initPathStr += s + "-";
 		}
+		initPathStr = initPathStr.substring(0,initPathStr.length()-1);
+		System.out.println(initPathStr);*/
+
+		//build the path into a hamiltonia path
+		/*List<String> finPath = new ArrayList<String>(); 
+		for(String s : wisdomPath){
+			//System.out.println(s.split("-")[0] + " " + s.split("-")[1]);
+			String pointA = s.split("-")[0];
+			String pointB = s.split("-")[1];
+			if(finPath.size() == 0){
+				finPath.add(pointA);
+				finPath.add(pointB);
+				wisdomPath.remove(s);
+			}
+			else {
+
+			}
+			for(String a : wisdomPath){
+				System.out.println(a + " ");
+			}
+			System.out.println();	
+		}*/
+
+		List<String> finPath = new ArrayList<String>();
+		finPath.add(wisdomPath.get(0).split("-")[0]);
+		finPath.add(wisdomPath.get(0).split("-")[1]);
+		wisdomPath.remove(wisdomPath.get(0));
+
+		//System.out.println(finPath.get(0) + " " + finPath.get(1));
+
+		while(wisdomPath.size() != 0){
+			for(String a : wisdomPath){
+					System.out.print(a + " ");
+				}			
+				System.out.println();
+
+			for(int i = 0; i < wisdomPath.size(); i++){
+				Integer pointA = Integer.valueOf(finPath.get(0));
+				Integer pointB = Integer.valueOf(finPath.get(finPath.size()-1));
+				String[] iter = wisdomPath.get(i).split("-");
+				System.out.println(iter[0] + " " + iter[1]);
+
+				if(Integer.valueOf(iter[0]) == pointA || Integer.valueOf(iter[1]) == pointA){
+					/*System.out.println(wisdomPath.get(i));
+					System.out.println(pointA);
+					System.out.println(wisdomPath.get(i).replace("-",""));*/
+					/*String pointToAdd = wisdomPath.get(i).replace(pointA,"");
+					pointToAdd = pointToAdd.replace("-","");
+					
+					
+					finPath.add(0, pointToAdd);
+					wisdomPath.remove(i);*/
+					break;
+				}
+
+				else if(Integer.valueOf(iter[0]) == pointB || Integer.valueOf(iter[1]) == pointB){
+					/*System.out.println(wisdomPath.get(i));
+					System.out.println(pointB);*/
+
+					/*int index = wisdomPath.get(i).indexOf(pointB);
+					String pointToAdd = "";
+					if(index == 2){
+						pointToAdd = Character.toString(wisdomPath.get(i).charAt(0));
+					}
+					else if(index == 0){
+						pointToAdd = Character.toString(wisdomPath.get(i).charAt(2));
+					}
+					//System.out.println(pointToAdd);
+					*/
+					/*String pointToAdd = wisdomPath.get(i).replace(pointB,"");
+					pointToAdd = pointToAdd.replace("-","");
+					
+					finPath.add(finPath.size(), pointToAdd);
+					wisdomPath.remove(i);*/
+
+					break;
+				}
+				else {
+					
+				}
+				
+			}
+			for(String a : finPath){
+					System.out.print(a + " ");
+				}			
+				System.out.println();
+				System.out.println();
+			//break;
+		}
+
+		/*ArrayList<Integer> finIntPath = new ArrayList<Integer>();
+		for(String a : finPath){
+			finIntPath.add(Integer.valueOf(a));
+		}
+
+		for(Integer i : finIntPath){
+			System.out.println(i);
+		}
+		Path finalPathObj = new Path(finIntPath);
+		System.out.println(finalPathObj.dist);*/
+
+
 
 
 
