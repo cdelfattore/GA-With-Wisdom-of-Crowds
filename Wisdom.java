@@ -123,7 +123,7 @@ public class Wisdom {
 		/*int k = Integer.valueOf(args[1]);
 		int numCrossNodes = Integer.valueOf(args[2]);
 		int mutateRate = Integer.valueOf(args[4]);*/
-		int k = 1000;
+		int k = 500;
 		int numCrossNodes = (int)points.size() / 5;
 		int mutateRate = 10;
 		for(int i = 0; i < k; i++){
@@ -277,9 +277,9 @@ public class Wisdom {
 				if(mostCommonEdges.get(s) == i){
 					//System.out.println(s + ", " + mostCommonEdges.get(s));
 					wisdomPath.add(s);
-					if(wisdomPath.size() == points.size()-1){
+					/*if(wisdomPath.size() == points.size()-1){
 						stop = true;
-					}
+					}*/
 				}
 			}
 		}
@@ -311,84 +311,150 @@ public class Wisdom {
 			}
 			System.out.println();	
 		}*/
+		List<Integer> wisdomRemainPoints = new ArrayList<Integer>();
+		for(int i = 0; i < wisdomPath.size() - 1; i++){
+			//System.out.println(wisdomPath.get(i));
+			String[] tmp = wisdomPath.get(i).split("-");
+			wisdomRemainPoints.add(Integer.valueOf(tmp[0]));
+			wisdomRemainPoints.add(Integer.valueOf(tmp[1]));
+		}
+
+		/*for(String s : wisdomRemainPoints){
+			System.out.print(s + " ");
+		}
+		System.out.println();*/
 
 		List<String> finPath = new ArrayList<String>();
 		finPath.add(wisdomPath.get(0).split("-")[0]);
 		finPath.add(wisdomPath.get(0).split("-")[1]);
+		wisdomRemainPoints.remove(Integer.valueOf(wisdomPath.get(0).split("-")[0]));
+		wisdomRemainPoints.remove(Integer.valueOf(wisdomPath.get(0).split("-")[1]));
 		wisdomPath.remove(wisdomPath.get(0));
 
 		//System.out.println(finPath.get(0) + " " + finPath.get(1));
 
-		while(wisdomPath.size() != 0){
+		while(wisdomRemainPoints.size() != 0){
+			System.out.print("Remaining Points: ");
+			for(Integer s : wisdomRemainPoints){
+				System.out.print(s + " ");
+			}
+		System.out.println();
+			System.out.print("Wisdom: ");
 			for(String a : wisdomPath){
 					System.out.print(a + " ");
 				}			
 				System.out.println();
-
-			for(int i = 0; i < wisdomPath.size(); i++){
-				Integer pointA = Integer.valueOf(finPath.get(0));
-				Integer pointB = Integer.valueOf(finPath.get(finPath.size()-1));
-				String[] iter = wisdomPath.get(i).split("-");
-				System.out.println(iter[0] + " " + iter[1]);
-
-				if(Integer.valueOf(iter[0]) == pointA || Integer.valueOf(iter[1]) == pointA){
-					/*System.out.println(wisdomPath.get(i));
-					System.out.println(pointA);
-					System.out.println(wisdomPath.get(i).replace("-",""));*/
-					/*String pointToAdd = wisdomPath.get(i).replace(pointA,"");
-					pointToAdd = pointToAdd.replace("-","");
-					
-					
-					finPath.add(0, pointToAdd);
-					wisdomPath.remove(i);*/
-					break;
-				}
-
-				else if(Integer.valueOf(iter[0]) == pointB || Integer.valueOf(iter[1]) == pointB){
-					/*System.out.println(wisdomPath.get(i));
-					System.out.println(pointB);*/
-
-					/*int index = wisdomPath.get(i).indexOf(pointB);
-					String pointToAdd = "";
-					if(index == 2){
-						pointToAdd = Character.toString(wisdomPath.get(i).charAt(0));
-					}
-					else if(index == 0){
-						pointToAdd = Character.toString(wisdomPath.get(i).charAt(2));
-					}
-					//System.out.println(pointToAdd);
-					*/
-					/*String pointToAdd = wisdomPath.get(i).replace(pointB,"");
-					pointToAdd = pointToAdd.replace("-","");
-					
-					finPath.add(finPath.size(), pointToAdd);
-					wisdomPath.remove(i);*/
-
-					break;
-				}
-				else {
-					
-				}
-				
-			}
-			for(String a : finPath){
+				System.out.print("Start: ");
+				for(String a : finPath){
 					System.out.print(a + " ");
 				}			
 				System.out.println();
-				System.out.println();
-			//break;
+			Integer pointA = Integer.valueOf(finPath.get(0));
+			Integer pointB = Integer.valueOf(finPath.get(finPath.size()-1));
+
+			for(int i = 0; i < wisdomPath.size(); i++){
+				String[] iter = wisdomPath.get(i).split("-");
+				//System.out.println(iter[0] + " " + iter[1]);
+
+				if(Integer.valueOf(iter[0]) == pointA){ 
+					/*System.out.println(wisdomPath.get(i));
+					System.out.println("pointA: " + pointA);
+					System.out.println("iter[0]: " + iter[0]);
+					System.out.println("Point to add: " + iter[1]);*/
+									
+					finPath.add(0, iter[1]);
+					wisdomPath.remove(i);
+					//while(wisdomRemainPoints.indexOf(Integer.valueOf(iter[1])) != -1){
+						wisdomRemainPoints.remove(Integer.valueOf(iter[1]));	
+					//}
+					break;
+				}
+
+				else if(Integer.valueOf(iter[1]) == pointA){
+					/*System.out.println(wisdomPath.get(i));
+					System.out.println("iter[1]: " + iter[1]);
+					System.out.println("pointA: " + pointA);
+					System.out.println("Point to add: " + iter[0]);*/
+
+					finPath.add(0, iter[0]);
+					wisdomPath.remove(i);
+					//while(wisdomRemainPoints.indexOf(Integer.valueOf(iter[0])) != -1){
+						wisdomRemainPoints.remove(Integer.valueOf(iter[0]));	
+					//}
+					break;
+				}
+
+				else if(Integer.valueOf(iter[0]) == pointB) {
+					/*System.out.println(wisdomPath.get(i));
+					System.out.println("pointB: " + pointB);
+					System.out.println("iter[0]: " + iter[0]);
+					System.out.println("Point to add: " + iter[1]);*/
+
+					finPath.add(finPath.size(), iter[1]);
+					wisdomPath.remove(i);
+					//while(wisdomRemainPoints.indexOf(Integer.valueOf(iter[1])) != -1){
+						wisdomRemainPoints.remove(Integer.valueOf(iter[1]));	
+					//}
+					break;
+				}
+				else if(Integer.valueOf(iter[1]) == pointB){
+					/*System.out.println(wisdomPath.get(i));
+					System.out.println("pointB: " + pointB);
+					System.out.println("iter[1]: " + iter[1]);
+					System.out.println("Point to add: " + iter[0]);*/
+					finPath.add(finPath.size(), iter[0]);
+					wisdomPath.remove(i);
+					//while(wisdomRemainPoints.indexOf(Integer.valueOf(iter[0])) != -1){
+						wisdomRemainPoints.remove(Integer.valueOf(iter[0]));	
+					//}					
+					break;
+				}
+
+				else {
+
+				}
+			}
+			System.out.println(wisdomRemainPoints.indexOf(pointA) == -1);
+			System.out.println(wisdomRemainPoints.indexOf(pointB) == -1);
+			if(wisdomRemainPoints.indexOf(pointA) == -1 && wisdomRemainPoints.indexOf(pointB) == -1){
+				String[] iter = wisdomPath.get(0).split("-");
+				//System.out.println(iter[0] + " " + iter[1]);
+				finPath.add(0,iter[0]);
+				finPath.add(finPath.size(),iter[1]);
+				wisdomPath.remove(0);
+				//while(wisdomRemainPoints.indexOf(Integer.valueOf(iter[0])) != -1){
+					wisdomRemainPoints.remove(Integer.valueOf(iter[0]));	
+				//}
+				//while(wisdomRemainPoints.indexOf(Integer.valueOf(iter[1])) != -1){
+					wisdomRemainPoints.remove(Integer.valueOf(iter[1]));	
+				//}
+				//'finPath.add(String.valueOf(wisdomRemainPoints.get(0)));
+				//break;
+
+			}
 		}
 
-		/*ArrayList<Integer> finIntPath = new ArrayList<Integer>();
+		for(String a : finPath){
+			System.out.print(a + " ");
+		}			
+		System.out.println();
+		
+		for(String a : wisdomPath){
+			System.out.print(a + " ");
+		}
+		System.out.println();
+
+		ArrayList<Integer> finIntPath = new ArrayList<Integer>();
 		for(String a : finPath){
 			finIntPath.add(Integer.valueOf(a));
 		}
 
-		for(Integer i : finIntPath){
-			System.out.println(i);
-		}
+		/*for(Integer i : finIntPath){
+			System.out.print(i + "-");
+		}*/
 		Path finalPathObj = new Path(finIntPath);
-		System.out.println(finalPathObj.dist);*/
+		System.out.println("TSP Path? " + isTspPath(finIntPath));
+		System.out.println(finalPathObj.dist);
 
 
 
@@ -508,6 +574,16 @@ public class Wisdom {
 		//System.out.println(tmp.pathList + " " + tmp.dist);
 		//childPaths.add(tmp);
 		return tmp;
+	}
+
+	public static Boolean isTspPath(List<Integer> path){
+		for(int i = 1; i <= points.size(); i++){
+			if(!path.contains(i)){
+				System.out.println("missing: " + i);
+				return false;	
+			} 
+		}
+		return true;
 	}
 }
 
