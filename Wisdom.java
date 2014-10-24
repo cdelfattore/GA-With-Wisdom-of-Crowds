@@ -170,11 +170,12 @@ public class Wisdom {
 			System.out.println();*/
 			//System.out.println(orderPaths.get(0).dist);
 		}
-		/*for(Path p : orderPaths){
-			//System.out.println(p.pathList + " " + p.dist);
+		for(Path p : orderPaths){
+			System.out.println(p.pathList);
 			System.out.println(p.dist);
+			System.out.println();
 		}
-		System.out.println();*/
+		System.out.println();
 
 		//Wisdom of the crowd logic
 
@@ -191,57 +192,146 @@ public class Wisdom {
 		}
 
 		for(Path p : uniquePaths){
-			//System.out.println(p.pathList);
+			//System.out.println(p.pathList + " " + p.dist);
 			System.out.println(p.dist);
-			System.out.println();
 		}
 		System.out.println();
 
-		//find the most common node at each index of the path
-		int[][] pointOccurances = new int[points.size() + 1][points.size() + 1];
-		for(int i = 0; i < points.size(); i++) {
-			for(int j = 0; j < points.size(); j++){
-				pointOccurances[i][j] = 0;
-			}
-		}
-
+		//find edges that are common among the top 6 different smallest paths
+		//create a multi-dimensional array for this
+		int[][] edgeCounts = new int[points.size()+1][points.size()+1];
 		for(Path p : uniquePaths){
-			for(int i = 0; i < p.pathList.size(); i++){
-				pointOccurances[i][p.pathList.get(i)] += 1;
-			}
-		}
-
-		/*for(int i = 0; i < points.size(); i++) {
-			for(int j = 0; j < points.size(); j++){
-				System.out.println("i: " + i + " j: " + j + " " + pointOccurances[i][j]);
-			}
-			System.out.println();
-		}*/
-		
-		//now build the path from the most common nodes from each element
-		ArrayList<Integer> finPath = new ArrayList<Integer>();
-		for(int i = 0; i < points.size() + 1; i++){
-			int mostCommonAmount = 0;
-			int mostCommonNum = 0;
-			for(int j = 0; j < points.size() + 1; j++){
-				if(pointOccurances[i][j] > mostCommonAmount && finPath.indexOf(j) == -1){
-					mostCommonAmount = pointOccurances[i][j];
-					mostCommonNum = j;
+			//System.out.println(p.pathList);
+			for(int i = 1; i < p.pathList.size(); i++){
+				if(i+1 == p.pathList.size()){
+					//System.out.print(p.pathList.get(i)+"-"+p.pathList.get(0));
+					//if(p.pathList.get(i) < p.pathList.get(0)) {
+						edgeCounts[p.pathList.get(i)][p.pathList.get(0)] += 1;
+					/*}
+					else if(p.pathList.get(i) > p.pathList.get(0)){
+						edgeCounts[p.pathList.get(0)][p.pathList.get(i)] += 1;
+					}*/
+				}
+				else {
+					//System.out.print(p.pathList.get(i)+"-"+p.pathList.get(i+1)+ ",");
+					//if(p.pathList.get(i) < p.pathList.get(i+1)){
+						edgeCounts[p.pathList.get(i - 1)][p.pathList.get(i)] += 1;		
+					/*}
+					else if(p.pathList.get(i) > p.pathList.get(i+1)){
+						edgeCounts[p.pathList.get(i+1)][p.pathList.get(i)] += 1;		
+					}*/
+					
 				}
 			}
-			if(mostCommonNum != 0){
-				finPath.add(mostCommonNum);
+			//System.out.println();
+		}
+		//print the occurances of the path lengths
+		/*for (int i = 1; i <= points.size();i++ ) {
+			for(int j = 1; j <= points.size(); j++){
+				if(edgeCounts[i][j] != 0){
+					System.out.println(i+","+j + ": " +edgeCounts[i][j]);	
+				}
+				
+			}
+		}*/
+
+		//use a map to easily find what edges occur most often
+		Map<String,Integer> mostCommonEdges = new LinkedHashMap<String,Integer>();
+		for (int i = 1; i <= points.size();i++ ) {
+			for(int j = 1; j <= points.size(); j++){
+				if(edgeCounts[i][j] != 0){
+					//System.out.println(i+","+j + ": " +edgeCounts[i][j]);	
+					mostCommonEdges.put(i+"-"+j,edgeCounts[i][j]);
+				}
+				
 			}
 		}
 
-		for(Integer i : finPath){
-			System.out.print(i + " ");
+		/*for(String s : mostCommonEdges.keySet()){
+			System.out.println(s + ", " + mostCommonEdges.get(s));
+		}
+		System.out.println();*/
+
+		ArrayList<String> finPath = new ArrayList<String>();
+		while(finPath.size() < points.size()){
+			String tmpMostCommonEdge = "";
+			int mostCommonEdgeAmount = 0;
+			for(String s : mostCommonEdges.keySet()){
+				//find the most common edge and add it to the finPath
+				
+
+				if(mostCommonEdges.get(s) > mostCommonEdgeAmount && !finPath.contains(s)){
+					tmpMostCommonEdge = s;
+					mostCommonEdgeAmount = mostCommonEdges.get(s);
+				}
+				
+			}
+			
+			System.out.println(tmpMostCommonEdge + " " + mostCommonEdgeAmount);
+			finPath.add(tmpMostCommonEdge);
+		}
+
+
+		/*//construct the new path with the n-1 most common edges
+		//because I only uses 6 paths to figure out which are the most common
+		//start with the edges that occur 6 times, then 5... until there is n-1 edges.
+		List<String> wisdomPath = new ArrayList<String>();
+		Boolean stop = false;
+		for(int i = popSize / 2; i > 0; i--){
+			if(stop) break;
+			for(String s : mostCommonEdges.keySet()){
+				//System.out.println(s + ", " + mostCommonEdges.get(s));
+				if(stop) break;
+				if(mostCommonEdges.get(s) == i){
+					//System.out.println(s + ", " + mostCommonEdges.get(s));
+					wisdomPath.add(s);
+					if(wisdomPath.size() == points.size()-1){
+						stop = true;
+					}
+				}
+			}
+		}
+
+		
+
+		ArrayList<Integer> finIntPath = new ArrayList<Integer>();
+		for(String a : wisdomPath){
+			String[] tmp = a.split("-");
+			System.out.println(a);
+			finIntPath.add(Integer.valueOf(tmp[0]));
+			finIntPath.add(Integer.valueOf(tmp[1]));
+		}
+
+		for(Integer i : finIntPath){
+			System.out.print(i + "-");
 		}
 		System.out.println();
+	
+		Path finalPathObj = new Path(finIntPath);
+		if(isTspPath(finIntPath)) {
+			System.out.println("TSP Path? " + isTspPath(finIntPath));
+			System.out.println(finalPathObj.dist);	
+		}
+		else {
+			//remove the extra nodes
+			ArrayList<Integer> newFinalPath = new ArrayList<Integer>();
+			for(Integer i : finIntPath) {
+				//System.out.println(i);
+				if(newFinalPath.indexOf(i) == -1){
+					newFinalPath.add(i);
+				}
+			}
 
-		Path finalPathObj = new Path(finPath);
-		System.out.println("TSP Path? " + isTspPath(finPath));
-		System.out.println(finalPathObj.dist);
+			for(Integer i : newFinalPath) {
+				System.out.print(i + "-");
+			}
+
+			Path editFinalPathObj = new Path(newFinalPath);
+			System.out.println(editFinalPathObj.dist);
+		}*/
+		
+
+
 
 	} //end of main
 
@@ -360,6 +450,7 @@ public class Wisdom {
 	}
 
 	public static Boolean isTspPath(List<Integer> path){
+		if(path.size()>points.size()) return false;
 		for(int i = 1; i <= points.size(); i++){
 			if(!path.contains(i)){
 				System.out.println("missing: " + i);
