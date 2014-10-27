@@ -373,49 +373,64 @@ public class Wisdom {
 				if(wisdomPathBoo) {
 					//System.out.println("Not found;");
 					System.out.println(pointA + " " + pointB);
-					//move point A and point B elsewhere using the closest edge insertion heuristic
-					int shortestIndex = 0;
+					
+					String pathToAdd = "";
 					Double shortestDistance = Double.MAX_VALUE;
-					for(int j = 1; j < finPath.size(); j++){
+					for(int j = 0; j < wisdomPath.size(); j++){
+						Integer wisA = Integer.valueOf(wisdomPath.get(j).split("-")[0]);
+						Integer wisB = Integer.valueOf(wisdomPath.get(j).split("-")[1]);
+						System.out.println(wisA + " " + wisB);
+
+						System.out.println("pointA");
+						System.out.println(edgeLengths.get(pointA).get(wisA));
+						System.out.println(edgeLengths.get(wisA).get(wisB));
+						System.out.println("pointB");
+						System.out.println(edgeLengths.get(pointB).get(wisA));
+						System.out.println(edgeLengths.get(wisA).get(wisB));
 						
-						if(j >= finPath.size() - 1) {
-							System.out.println(finPath.get(j) + " " + finPath.get(0));
-							//System.out.println(edgeLengths.get(Integer.valueOf(finPath.get(j - 1))) );
-							//System.out.println(edgeLengths.get(Integer.valueOf(finPath.get(j))));
+						Double distanceA = edgeLengths.get(pointA).get(wisA) + edgeLengths.get(wisA).get(wisB);
+						Double distanceB = edgeLengths.get(pointB).get(wisA) + edgeLengths.get(wisA).get(wisB);
 
-							Double distance = edgeLengths.get(Integer.valueOf(finPath.get(j))).get(pointA) + edgeLengths.get(Integer.valueOf(finPath.get(0))).get(pointA);
-							System.out.println(distance);
-
-							if(distance < shortestDistance){
-								shortestDistance = distance;
-								shortestIndex = j;		
-							}
+						if(distanceA < shortestDistance){
+							shortestDistance = distanceA;
+							pathToAdd = String.valueOf(pointA) + "-" + String.valueOf(wisA) + "-" + String.valueOf(wisB);
 						}
-						else {
-							System.out.println(finPath.get(j - 1) + " " + pointA + " " + finPath.get(j));
-							//System.out.println(edgeLengths.get(Integer.valueOf(finPath.get(j - 1))) );
-							//System.out.println(edgeLengths.get(Integer.valueOf(finPath.get(j))));
-
-							Double distance = edgeLengths.get(Integer.valueOf(finPath.get(j - 1))).get(pointA) + edgeLengths.get(Integer.valueOf(finPath.get(j))).get(pointA);
-							System.out.println(distance);
-
-							if(distance < shortestDistance){
-								shortestDistance = distance;
-								shortestIndex = j;		
-							}
+						if(distanceB < shortestDistance){
+							shortestDistance = distanceB;
+							pathToAdd = String.valueOf(pointB) + "-" + String.valueOf(wisA) + "-" + String.valueOf(wisB);
 						}
 					}
-					finPath.remove(String.valueOf(pointA));
-					finPath.add(shortestIndex - 1, String.valueOf(pointA));
-					System.out.println("index: " + shortestIndex + " shortestDistance " + shortestDistance);
 
+					System.out.println(shortestDistance + " at : " + pathToAdd);
+					String[] edgeToAdd = pathToAdd.split("-");
+
+					System.out.println(finPath.indexOf(edgeToAdd[0]));
+
+					if(finPath.indexOf(edgeToAdd[0]) == 0){
+						finPath.add(0,edgeToAdd[1]);
+						finPath.add(0,edgeToAdd[2]);	
+					}
+					else if(finPath.indexOf(edgeToAdd[0]) == finPath.size()-1) {
+						finPath.add(finPath.size(),edgeToAdd[1]);
+						finPath.add(finPath.size(),edgeToAdd[2]);	
+					}
+					
+
+
+					wisdomPath.remove(edgeToAdd[1] + "-" + edgeToAdd[2]);
+
+					for(String a : wisdomPath){
+						System.out.print(a + " ");
+					}			
+					System.out.println();
+					
 					for(String a : finPath){
 						System.out.print(a + " ");
 					}			
 					System.out.println();
 
+					//break;
 					
-					break;
 				}
 			/*System.out.println(wisdomRemainPoints.indexOf(pointA) == -1);
 			System.out.println(wisdomRemainPoints.indexOf(pointB) == -1);
