@@ -187,7 +187,7 @@ public class Wisdom {
 				uniqueDistances.add(p.dist);
 				uniquePaths.add(p);
 			}
-			if(uniquePaths.size() == popSize / 2) break;
+			if(uniquePaths.size() == popSize / 4) break;
 		}
 
 		for(Path p : uniquePaths){
@@ -282,17 +282,17 @@ public class Wisdom {
 
 		while(wisdomPath.size() != 0){
 
-		System.out.println();
-			System.out.print("Wisdom: ");
-			for(String a : wisdomPath){
-					System.out.print(a + " ");
-				}			
-				System.out.println();
-				System.out.print("Start: ");
-				for(String a : finPath){
-					System.out.print(a + " ");
-				}			
-				System.out.println();
+			// System.out.println();
+			// System.out.print("Wisdom: ");
+			// for(String a : wisdomPath){
+			// 		System.out.print(a + " ");
+			// 	}			
+			// 	System.out.println();
+			// 	System.out.print("Start: ");
+			// 	for(String a : finPath){
+			// 		System.out.print(a + " ");
+			// 	}			
+			// 	System.out.println();
 
 			Integer pointA = Integer.valueOf(finPath.get(0));
 			Integer pointB = Integer.valueOf(finPath.get(finPath.size()-1));
@@ -370,6 +370,7 @@ public class Wisdom {
 			//see if pointA or pointB is actually in wisdom path
 				//convert wisdom path to a string and search the string for 
 				//point a and point b
+				//change to add point a then add pointB
 				if(wisdomPathBoo) {
 					//System.out.println("Not found;");
 					System.out.println(pointA + " " + pointB);
@@ -381,12 +382,12 @@ public class Wisdom {
 						Integer wisB = Integer.valueOf(wisdomPath.get(j).split("-")[1]);
 						System.out.println(wisA + " " + wisB);
 
-						System.out.println("pointA");
+						/*System.out.println("pointA");
 						System.out.println(edgeLengths.get(pointA).get(wisA));
 						System.out.println(edgeLengths.get(wisA).get(wisB));
 						System.out.println("pointB");
 						System.out.println(edgeLengths.get(pointB).get(wisA));
-						System.out.println(edgeLengths.get(wisA).get(wisB));
+						System.out.println(edgeLengths.get(wisA).get(wisB));*/
 						
 						Double distanceA = edgeLengths.get(pointA).get(wisA) + edgeLengths.get(wisA).get(wisB);
 						Double distanceB = edgeLengths.get(pointB).get(wisA) + edgeLengths.get(wisA).get(wisB);
@@ -454,14 +455,95 @@ public class Wisdom {
 
 		ArrayList<Integer> finIntPath = new ArrayList<Integer>();
 		for(String a : finPath){
+			System.out.print(a + "-");
 			finIntPath.add(Integer.valueOf(a));
 		}
 
+		//check for duplicates
+		List<Integer> nodesInList = new ArrayList<Integer>();
+		List<Integer> dups = new ArrayList<Integer>();
+		for(Integer i : path){
+			if(nodesInList.indexOf(i) == -1){
+				nodesInList.add(i);
+			}
+			else {
+				dups.add(i);
+			}
+		}
+
+		System.out.println();
+		System.out.println("Dups");
+		//remove duplicates to make a smaller path
+		if(dups.size() > 0){
+			for(Integer i : dups){
+				//System.out.print(i + " ");
+
+			}
+		}
+		System.out.println();
+
+		//System.out.println();
+		//find missing points
+		List<Integer> missing = new ArrayList<Integer>();
+		for(int i = 1; i <= points.size(); i++){
+			if(!finIntPath.contains(i)){
+				if(!missing.contains(i)){
+					missing.add(i);
+				}
+			} 
+		}
+		
+		if(missing.size() > 0){
+			for(int i = 0; i < missing.size(); i++){
+				//greedly add the point back in
+				System.out.println("Missing");
+				System.out.println(i + ": " + missing.get(i));
+
+				int shortestIndex = 0;
+				Double shortestDistance = Double.MAX_VALUE;
+				for(int j = 1; j < finPath.size(); j++){
+						if(j >= finPath.size() - 1) {
+							System.out.println(finPath.get(j) + " " + missing.get(i) + " " + finPath.get(0));
+							//System.out.println(edgeLengths.get(Integer.valueOf(finPath.get(j - 1))) );
+							//System.out.println(edgeLengths.get(Integer.valueOf(finPath.get(j))));
+
+							Double distance = edgeLengths.get(Integer.valueOf(finPath.get(j))).get(missing.get(i)) + edgeLengths.get(Integer.valueOf(finPath.get(0))).get(missing.get(i));
+							System.out.println(distance);
+
+							if(distance < shortestDistance){
+								shortestDistance = distance;
+								shortestIndex = j;		
+							}
+						}
+						else {
+							System.out.println(finPath.get(j - 1) + " " + missing.get(i) + " " + finPath.get(j));
+							//System.out.println(edgeLengths.get(Integer.valueOf(finPath.get(j - 1))) );
+							//System.out.println(edgeLengths.get(Integer.valueOf(finPath.get(j))));
+
+							Double distance = edgeLengths.get(Integer.valueOf(finPath.get(j - 1))).get(missing.get(i)) + edgeLengths.get(Integer.valueOf(finPath.get(j))).get(missing.get(i));
+							System.out.println(distance);
+
+							if(distance < shortestDistance){
+								shortestDistance = distance;
+								shortestIndex = j;		
+							}
+						}
+					}
+					System.out.println("index: " + shortestIndex + " shortestDistance " + shortestDistance);
+					finPath.add(shortestIndex - 1, String.valueOf(missing.get(i)));
+			}
+		}
+
+		for(String a : finPath){
+			System.out.print(a + "-");
+		}
+		
+		System.out.println();
 		/*for(Integer i : finIntPath){
 			System.out.print(i + "-");
 		}*/
 		Path finalPathObj = new Path(finIntPath);
-		System.out.println("TSP Path? " + isTspPath(finIntPath));
+		//System.out.println("TSP Path? " + isTspPath(finIntPath));
 		System.out.println(finalPathObj.dist);
 
 
@@ -583,13 +665,47 @@ public class Wisdom {
 	}
 
 	public static Boolean isTspPath(List<Integer> path){
+		//check for duplicates
+		List<Integer> nodesInList = new ArrayList<Integer>();
+		List<Integer> dups = new ArrayList<Integer>();
+		for(Integer i : path){
+			if(nodesInList.indexOf(i) == -1){
+				nodesInList.add(i);
+			}
+			else {
+				dups.add(i);
+			}
+		}
+		System.out.println();
+		System.out.println("Dups");
+		if(dups.size() > 0){
+			for(Integer i : dups){
+				System.out.print(i + " ");
+			}
+			return false;
+		}
+		System.out.println();
+
+		System.out.println();
+		//find missing points
+		List<Integer> missing = new ArrayList<Integer>();
 		for(int i = 1; i <= points.size(); i++){
 			if(!path.contains(i)){
-				System.out.println("missing: " + i);
-				return false;	
+				missing.add(i);
 			} 
 		}
+		System.out.println("Missing");
+		if(missing.size() > 0){
+			for(Integer i : missing){
+				System.out.print(i + " ");
+			}
+			System.out.println();
+			return false;
+		}
+		System.out.println();
 		return true;
+
+		
 	}
 }
 
