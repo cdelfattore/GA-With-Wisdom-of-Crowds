@@ -282,17 +282,17 @@ public class Wisdom {
 
 		while(wisdomPath.size() != 0){
 
-			System.out.println();
-			System.out.print("Wisdom: ");
-			for(String a : wisdomPath){
-					System.out.print(a + " ");
-				}			
-				System.out.println();
-				System.out.print("Start: ");
-				for(String a : finPath){
-					System.out.print(a + " ");
-				}			
-				System.out.println();
+			// System.out.println();
+			// System.out.print("Wisdom: ");
+			// for(String a : wisdomPath){
+			// 		System.out.print(a + " ");
+			// 	}			
+			// 	System.out.println();
+			// 	System.out.print("Start: ");
+			// 	for(String a : finPath){
+			// 		System.out.print(a + " ");
+			// 	}			
+			// 	System.out.println();
 
 			Integer pointA = Integer.valueOf(finPath.get(0));
 			Integer pointB = Integer.valueOf(finPath.get(finPath.size()-1));
@@ -387,36 +387,45 @@ public class Wisdom {
 						System.out.println(edgeLengths.get(pointB).get(wisA));
 						System.out.println(edgeLengths.get(wisA).get(wisB));*/
 						
-						Double distanceA = edgeLengths.get(pointA).get(wisA) + edgeLengths.get(wisA).get(wisB);
-						//Double distanceB = edgeLengths.get(pointB).get(wisA) + edgeLengths.get(wisA).get(wisB);
+						Double distancePaAB = edgeLengths.get(pointA).get(wisA) + edgeLengths.get(wisA).get(wisB);
+						Double distancePaBA = edgeLengths.get(pointA).get(wisB) + edgeLengths.get(wisB).get(wisA);
+						Double distancePbAB = edgeLengths.get(pointB).get(wisA) + edgeLengths.get(wisA).get(wisB);
+						Double distancePbBA = edgeLengths.get(pointB).get(wisB) + edgeLengths.get(wisB).get(wisA);
 
-						if(distanceA < shortestDistance){
-							shortestDistance = distanceA;
-							pathToAdd = String.valueOf(wisA) + "-" + String.valueOf(pointA) + "-" + String.valueOf(wisB);
+						if(distancePaAB < shortestDistance){
+							shortestDistance = distancePaAB;
+							pathToAdd = String.valueOf(pointA) + "-" + String.valueOf(wisA) + "-" + String.valueOf(wisB);
 						}
-						/*if(distanceB < shortestDistance){
-							shortestDistance = distanceB;
+						if(distancePaBA < shortestDistance){
+							shortestDistance = distancePaBA;
+							pathToAdd = String.valueOf(pointA) + "-" + String.valueOf(wisB) + "-" + String.valueOf(wisA);
+						}
+						if(distancePbAB < shortestDistance){
+							shortestDistance = distancePbAB;
 							pathToAdd = String.valueOf(pointB) + "-" + String.valueOf(wisA) + "-" + String.valueOf(wisB);
-						}*/
+						}
+						if(distancePbBA < shortestDistance){
+							shortestDistance = distancePbBA;
+							pathToAdd = String.valueOf(pointB) + "-" + String.valueOf(wisB) + "-" + String.valueOf(wisA);
+						}
 					}
 
 					System.out.println(shortestDistance + " at : " + pathToAdd);
 					String[] edgeToAdd = pathToAdd.split("-");
 
-					System.out.println(finPath.indexOf(edgeToAdd[0]));
+					//System.out.println(finPath.indexOf(edgeToAdd[0]));
 
 					if(finPath.indexOf(edgeToAdd[0]) == 0){
-						finPath.add(0,edgeToAdd[1]);
-						//finPath.add(0,edgeToAdd[2]);	
+						if(finPath.indexOf(edgeToAdd[1]) == -1) finPath.add(0,edgeToAdd[1]);
+						if(finPath.indexOf(edgeToAdd[2]) == -1) finPath.add(0,edgeToAdd[2]);	
 					}
-					else if(finPath.indexOf(edgeToAdd[0]) == finPath.size()-1) {
-						finPath.add(finPath.size(),edgeToAdd[1]);
-						//finPath.add(finPath.size(),edgeToAdd[2]);	
+					else /*if(finPath.indexOf(edgeToAdd[0]) == finPath.size()-1)*/ {
+						if(finPath.indexOf(edgeToAdd[1]) == -1) finPath.add(finPath.size(),edgeToAdd[1]);
+						if(finPath.indexOf(edgeToAdd[2]) == -1) finPath.add(finPath.size(),edgeToAdd[2]);	
 					}
 					
-
-
 					wisdomPath.remove(edgeToAdd[1] + "-" + edgeToAdd[2]);
+					wisdomPath.remove(edgeToAdd[2] + "-" + edgeToAdd[1]);
 
 					for(String a : wisdomPath){
 						System.out.print(a + " ");
@@ -443,7 +452,7 @@ public class Wisdom {
 		//check for duplicates
 		List<Integer> nodesInList = new ArrayList<Integer>();
 		List<Integer> dups = new ArrayList<Integer>();
-		for(Integer i : path){
+		for(Integer i : finIntPath){
 			if(nodesInList.indexOf(i) == -1){
 				nodesInList.add(i);
 			}
@@ -465,21 +474,24 @@ public class Wisdom {
 
 		//System.out.println();
 		//find missing points
+		System.out.println("Missing");
 		List<Integer> missing = new ArrayList<Integer>();
 		for(int i = 1; i <= points.size(); i++){
 			if(!finIntPath.contains(i)){
 				if(!missing.contains(i)){
+					System.out.println(i);
 					missing.add(i);
 				}
 			} 
 		}
+		System.out.println();
 		
 		//the below works fince inserts the numbers in the correct postion
 		if(missing.size() > 0){
 			for(int i = 0; i < missing.size(); i++){
 				//greedly add the point back in
-				System.out.println("Missing");
-				System.out.println(i + ": " + missing.get(i));
+				/*System.out.println("Missing");
+				System.out.println(i + ": " + missing.get(i));*/
 
 				int shortestIndex = 0;
 				Double shortestDistance = Double.MAX_VALUE;
@@ -516,14 +528,18 @@ public class Wisdom {
 			}
 		}
 
-		for(String a : finPath){
+		/*for(String a : finPath){
 			System.out.print(a + "-");
-		}
-		
-		System.out.println();
-		/*for(Integer i : finIntPath){
-			System.out.print(i + "-");
 		}*/
+		System.out.println();
+		for(Integer i = 1; i < points.size();i++){
+			if(finIntPath.contains(i)){
+
+			}
+			else{
+				System.out.print(i + "-");
+			}
+		}
 		Path finalPathObj = new Path(finIntPath);
 		//System.out.println("TSP Path? " + isTspPath(finIntPath));
 		System.out.println(finalPathObj.dist);
