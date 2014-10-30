@@ -1,4 +1,4 @@
-/* Assignment: Project 4 - TSP – Wisdom of the Crowds
+/* Assignment: Project 5 - TSP – Wisdom of the Crowds
 ** Name: Chris Del Fattore
 ** Email: crdelf01@cardmail.louisville.edu
 ** Description: Implementation of a Genetic algorithm with Wisdom of the Crowds logic for TSP Problem
@@ -6,11 +6,14 @@
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
+import javax.swing.*;
+import java.awt.*;
 
 public class Wisdom {
 	public static Map<Integer,Point> points; //map of points
 	public static Map<Integer,Map<Integer,Double>> edgeLengths; //map of edge lengths for all points
 	public static Random rnd; //Random number
+	public static ArrayList<Integer> finIntPath; //List of the final path to be draw on teh gui.
 
 	public static void main(String[] args) throws IOException {
 
@@ -88,11 +91,11 @@ public class Wisdom {
 		rnd = new Random();
 
 		//Create  random array of integers
-		List<int[]> populations = new ArrayList<int[]>();
+		ArrayList<int[]> populations = new ArrayList<int[]>();
 		populations.add(shuffle(path));
 
 		//List of Paths with distances
-		List<Path> lPaths = new ArrayList<Path>();
+		ArrayList<Path> lPaths = new ArrayList<Path>();
 		//create 10 arrays of random intergers
 		for(int i = 1; i <= 32; i++){
 			populations.add(shuffle(populations.get(i-1)));
@@ -110,7 +113,7 @@ public class Wisdom {
 		//lpaths will now be empty
 
 		// int popSize = Integer.valueOf(args[3]); //popSize will be the number of paths to carry on through each generation
-		int popSize = 64; //popSize will be the number of paths to carry on through each generation
+		int popSize = 32; //popSize will be the number of paths to carry on through each generation
 		ArrayList<Path> orderPaths = sortPathList(lPaths,popSize);
 		
 		/*for(Path p : orderPaths){
@@ -123,7 +126,7 @@ public class Wisdom {
 		/*int k = Integer.valueOf(args[1]);
 		int numCrossNodes = Integer.valueOf(args[2]);
 		int mutateRate = Integer.valueOf(args[4]);*/
-		int k = 100;
+		int k = 1000;
 		int numCrossNodes = (int)points.size() / 5;
 		int mutateRate = 10;
 		for(int i = 0; i < k; i++){
@@ -180,14 +183,15 @@ public class Wisdom {
 
 		//first search through the orderPath Arraylist and grab all the different paths
 		//store them in a new arraylist
-		List<Path> uniquePaths = new ArrayList<Path>();
-		List<Double> uniqueDistances = new ArrayList<Double>();
+		ArrayList<Path> uniquePaths = new ArrayList<Path>();
+		ArrayList<Double> uniqueDistances = new ArrayList<Double>();
 		for(Path p : orderPaths){
 			if(!uniqueDistances.contains(p.dist)){
 				uniqueDistances.add(p.dist);
 				uniquePaths.add(p);
 			}
 			if(uniquePaths.size() == popSize / 4) break;
+			//if(uniquePaths.size() == 8) break;
 		}
 
 		for(Path p : uniquePaths){
@@ -254,7 +258,7 @@ public class Wisdom {
 		//construct the new path with the n-1 most common edges
 		//because I only uses 6 paths to figure out which are the most common
 		//start with the edges that occur 6 times, then 5... until there is n-1 edges.
-		List<String> wisdomPath = new ArrayList<String>();
+		ArrayList<String> wisdomPath = new ArrayList<String>();
 		Boolean stop = false;
 		for(int i = popSize / 2; i > 0; i--){
 			if(stop) break;
@@ -275,7 +279,7 @@ public class Wisdom {
 			System.out.print(s + " ");
 		}*/
 		
-		List<String> finPath = new ArrayList<String>();
+		ArrayList<String> finPath = new ArrayList<String>();
 		finPath.add(wisdomPath.get(0).split("-")[0]);
 		finPath.add(wisdomPath.get(0).split("-")[1]);
 		wisdomPath.remove(wisdomPath.get(0));
@@ -371,14 +375,14 @@ public class Wisdom {
 				//change to add point a then add pointB
 				if(wisdomPathBoo) {
 					//System.out.println("Not found;");
-					System.out.println("376: " + pointA + " " + pointB);
+					//System.out.println("376: " + pointA + " " + pointB);
 					
 					String pathToAdd = "";
 					Double shortestDistance = Double.MAX_VALUE;
 					for(int j = 0; j < wisdomPath.size(); j++){
 						Integer wisA = Integer.valueOf(wisdomPath.get(j).split("-")[0]);
 						Integer wisB = Integer.valueOf(wisdomPath.get(j).split("-")[1]);
-						System.out.println(wisA + " " + wisB);
+						//System.out.println(wisA + " " + wisB);
 
 						/*System.out.println("pointA");
 						System.out.println(edgeLengths.get(pointA).get(wisA));
@@ -410,7 +414,7 @@ public class Wisdom {
 						}
 					}
 
-					System.out.println(shortestDistance + " at : " + pathToAdd);
+					//System.out.println(shortestDistance + " at : " + pathToAdd);
 					String[] edgeToAdd = pathToAdd.split("-");
 
 					//System.out.println(finPath.indexOf(edgeToAdd[0]));
@@ -427,7 +431,7 @@ public class Wisdom {
 					wisdomPath.remove(edgeToAdd[1] + "-" + edgeToAdd[2]);
 					wisdomPath.remove(edgeToAdd[2] + "-" + edgeToAdd[1]);
 
-					for(String a : wisdomPath){
+					/*for(String a : wisdomPath){
 						System.out.print(a + " ");
 					}			
 					System.out.println();
@@ -435,7 +439,7 @@ public class Wisdom {
 					for(String a : finPath){
 						System.out.print(a + " ");
 					}			
-					System.out.println();
+					System.out.println();*/
 
 					//break;
 					
@@ -443,15 +447,15 @@ public class Wisdom {
 
 		}
 
-		ArrayList<Integer> finIntPath = new ArrayList<Integer>();
+		finIntPath = new ArrayList<Integer>();
 		for(String a : finPath){
-			System.out.print(a + "-");
+			//System.out.print(a + "-");
 			finIntPath.add(Integer.valueOf(a));
 		}
 
 		//check for duplicates
-		List<Integer> nodesInList = new ArrayList<Integer>();
-		List<Integer> dups = new ArrayList<Integer>();
+		ArrayList<Integer> nodesInList = new ArrayList<Integer>();
+		ArrayList<Integer> dups = new ArrayList<Integer>();
 		for(Integer i : finIntPath){
 			if(nodesInList.indexOf(i) == -1){
 				nodesInList.add(i);
@@ -475,7 +479,7 @@ public class Wisdom {
 		//System.out.println();
 		//find missing points
 		System.out.println("Missing");
-		List<Integer> missing = new ArrayList<Integer>();
+		ArrayList<Integer> missing = new ArrayList<Integer>();
 		for(int i = 1; i <= points.size(); i++){
 			if(!finIntPath.contains(i)){
 				if(!missing.contains(i)){
@@ -495,13 +499,13 @@ public class Wisdom {
 
 				int shortestIndex = 0;
 				Double shortestDistance = Double.MAX_VALUE;
-				for(int j = 1; j < finPath.size(); j++){
-						if(j >= finPath.size() - 1) {
-							System.out.println(finPath.get(j) + " " + missing.get(i) + " " + finPath.get(0));
+				for(int j = 1; j < finIntPath.size(); j++){
+						if(j >= finIntPath.size() - 1) {
+							//System.out.println(finPath.get(j) + " " + missing.get(i) + " " + finPath.get(0));
 							//System.out.println(edgeLengths.get(Integer.valueOf(finPath.get(j - 1))) );
 							//System.out.println(edgeLengths.get(Integer.valueOf(finPath.get(j))));
 
-							Double distance = edgeLengths.get(Integer.valueOf(finPath.get(j))).get(missing.get(i)) + edgeLengths.get(Integer.valueOf(finPath.get(0))).get(missing.get(i));
+							Double distance = edgeLengths.get(Integer.valueOf(finIntPath.get(j))).get(missing.get(i)) + edgeLengths.get(Integer.valueOf(finIntPath.get(0))).get(missing.get(i));
 							System.out.println(distance);
 
 							if(distance < shortestDistance){
@@ -510,12 +514,12 @@ public class Wisdom {
 							}
 						}
 						else {
-							System.out.println(finPath.get(j - 1) + " " + missing.get(i) + " " + finPath.get(j));
+							//System.out.println(finPath.get(j - 1) + " " + missing.get(i) + " " + finPath.get(j));
 							//System.out.println(edgeLengths.get(Integer.valueOf(finPath.get(j - 1))) );
 							//System.out.println(edgeLengths.get(Integer.valueOf(finPath.get(j))));
 
-							Double distance = edgeLengths.get(Integer.valueOf(finPath.get(j - 1))).get(missing.get(i)) + edgeLengths.get(Integer.valueOf(finPath.get(j))).get(missing.get(i));
-							System.out.println(distance);
+							Double distance = edgeLengths.get(Integer.valueOf(finIntPath.get(j - 1))).get(missing.get(i)) + edgeLengths.get(Integer.valueOf(finIntPath.get(j))).get(missing.get(i));
+							//System.out.println(distance);
 
 							if(distance < shortestDistance){
 								shortestDistance = distance;
@@ -523,15 +527,12 @@ public class Wisdom {
 							}
 						}
 					}
-					System.out.println("index: " + shortestIndex + " shortestDistance " + shortestDistance);
-					finPath.add(shortestIndex, String.valueOf(missing.get(i)));
+					//System.out.println("index: " + shortestIndex + " shortestDistance " + shortestDistance);
+					finIntPath.add(shortestIndex, Integer.valueOf(missing.get(i)));
 			}
 		}
 
-		/*for(String a : finPath){
-			System.out.print(a + "-");
-		}*/
-		System.out.println();
+		System.out.println("Still Missing");
 		for(Integer i = 1; i < points.size();i++){
 			if(finIntPath.contains(i)){
 
@@ -540,13 +541,54 @@ public class Wisdom {
 				System.out.print(i + "-");
 			}
 		}
+		System.out.println();
 		Path finalPathObj = new Path(finIntPath);
 		//System.out.println("TSP Path? " + isTspPath(finIntPath));
 		System.out.println(finalPathObj.dist);
 
 
+		for(String a : finPath){
+			System.out.print(a + "-");
+		}
+		System.out.println();
+
+		//Create the JFrame that will display the points and the edges
+		JFrame frame = new JFrame();
+		frame.setSize(600,600);
+		frame.setLocationRelativeTo(null);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setTitle("Hamiltonian Path");
+		
+		//add the custom JPanel that will display the points and edges.
+		frame.add(new MyPanel());
+		frame.setVisible(true);
 
 	} //end of main
+
+	//mypanel class will display the points on a jframe
+	public static class MyPanel extends JPanel{
+		public void paint(Graphics g) {
+			Graphics2D g2 = (Graphics2D)g;
+
+			for(int i=0;i< points.size();i++){
+				//System.out.println(finIntPath.get(i)+": " + (int)points.get(finIntPath.get(i)).x + " " + (int)points.get(finIntPath.get(i)).y);
+				if(i+1>=points.size()){
+					//System.out.println("here");
+					//System.out.println((int)points.get(finIntPath.get(i)).x + " " + (int)points.get(finIntPath.get(i)).y + " " + (int)points.get(finIntPath.get(0)).x + " " + (int)points.get(finIntPath.get(0)).y);
+					//g2.drawLine((int)points.get(finIntPath.get(i)).x * 4,(int)points.get(finIntPath.get(i)).x * 4, (int)points.get(finIntPath.get(0)).x * 4, (int)points.get(finIntPath.get(0)).y * 4);	
+					//draw the point and the line
+					g2.drawOval((int)points.get(finIntPath.get(finIntPath.size()-1)).x *4, (int)points.get(finIntPath.get(finIntPath.size()-1)).y *4, 5, 5);
+					g2.drawLine( (int)points.get(finIntPath.get(0)).x *4, (int)points.get(finIntPath.get(0)).y*4,(int)points.get(finIntPath.get(finIntPath.size()-1)).x*4,(int)points.get(finIntPath.get(finIntPath.size()-1)).y*4);
+				}
+				else {
+					//System.out.println((int)points.get(finIntPath.get(i)).x + " " + (int)points.get(finIntPath.get(i)).y + " " + (int)points.get(finIntPath.get(i+1)).x + " " + (int)points.get(finIntPath.get(i+1)).y);
+					//draw the point and the line
+					g2.drawOval((int)points.get(finIntPath.get(i)).x *4, (int)points.get(finIntPath.get(i)).y *4, 5, 5);
+					g2.drawLine( (int)points.get(finIntPath.get(i)).x *4, (int)points.get(finIntPath.get(i)).y*4,(int)points.get(finIntPath.get(i+1)).x*4,(int)points.get(finIntPath.get(i+1)).y*4);
+				}
+			}
+		}	
+	}
 
 	//Method to compute distance
 	//Takes to points as parameters and computes the distance between them.
@@ -581,7 +623,7 @@ public class Wisdom {
 		return fin;
 	}
 
-	public static ArrayList<Path> sortPathList(List<Path> arrayList, int pop){
+	public static ArrayList<Path> sortPathList(ArrayList<Path> arrayList, int pop){
 		//order the arrayList array in order to find the best parents
 		ArrayList<Path> orderPaths = new ArrayList<Path>();
 		while(arrayList.size() > 0){
@@ -662,10 +704,10 @@ public class Wisdom {
 		return tmp;
 	}
 
-	public static Boolean isTspPath(List<Integer> path){
+	public static Boolean isTspPath(ArrayList<Integer> path){
 		//check for duplicates
-		List<Integer> nodesInList = new ArrayList<Integer>();
-		List<Integer> dups = new ArrayList<Integer>();
+		ArrayList<Integer> nodesInList = new ArrayList<Integer>();
+		ArrayList<Integer> dups = new ArrayList<Integer>();
 		for(Integer i : path){
 			if(nodesInList.indexOf(i) == -1){
 				nodesInList.add(i);
@@ -686,7 +728,7 @@ public class Wisdom {
 
 		//System.out.println();
 		//find missing points
-		List<Integer> missing = new ArrayList<Integer>();
+		ArrayList<Integer> missing = new ArrayList<Integer>();
 		for(int i = 1; i <= points.size(); i++){
 			if(!path.contains(i)){
 				missing.add(i);
